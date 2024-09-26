@@ -6,15 +6,18 @@
 // - describe what you did to take this project "above and beyond"
 
 let shape;
+let stars = [];
+let img;
+
+function preload() {
+  img = loadImage("galaxy.jpg");
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
-  
-  shape = buildGeometry(createShape); 
-}
 
-function createShape() {
-  
+  angleMode(DEGREES)
+;
 }
 
 function draw() {
@@ -23,6 +26,18 @@ function draw() {
   // Enable orbiting with the mouse.
   orbitControl();
 
-  model(shape);
+  drawBuilding();
+}
+
+function drawBuilding() {
+  // start drawing shape
+  beginShape();
+
+  vertex(10, 10);
+  vertex(90, 10);
+  vertex(90, 90);
+  vertex(10, 90);
+
+  endShape(CLOSE);
 
 }
