@@ -1,43 +1,58 @@
-// Project Title
-// Your Name
-// Date
+// Interactive Galaxy
+// Amy L Zhang
+// October 1, 2024
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
 let shape;
 let stars = [];
-let img;
-
-function preload() {
-  img = loadImage("galaxy.jpg");
-}
+let planets = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
-  angleMode(DEGREES)
-;
+  // create array with stars
+  for (let i = 0; i < 100; i++) {
+    stars.push(new Star());
+  }
+
+  angleMode(DEGREES);
 }
 
 function draw() {
   background(200);
 
-  // Enable orbiting with the mouse.
+  // enable orbiting with mouse
   orbitControl();
 
-  drawBuilding();
 }
 
-function drawBuilding() {
-  // start drawing shape
-  beginShape();
+// create class of star
+class Star {
+  constructor() {
+    this.posX = random(-windowWidth, windowWidth);
+    this.posY = random(-windowHeight, windowHeight);
+    this.size = random(1, 5);
+  }
 
-  vertex(10, 10);
-  vertex(90, 10);
-  vertex(90, 90);
-  vertex(10, 90);
+  display() {
+    fill(255);
+    sphere(this.size);
+  }
+}
 
-  endShape(CLOSE);
+// create class of planet
+class Planet {
+  constructor() {
+    this.posX = random(-windowWidth, windowWidth);
+    this.posY = random(-windowHeight, windowHeight);
+    this.size = random(10, 15);
+    this.color = random();
+  }
 
+  display() {
+    fill(this.color);
+    sphere(this.size);
+  }
 }
