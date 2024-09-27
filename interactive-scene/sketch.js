@@ -17,15 +17,35 @@ function setup() {
     stars.push(new Star());
   }
 
+  // create array with planets
+  for (let i = 0; i < 15; i++) {
+    planets.push(new Planet());
+  }
+
   angleMode(DEGREES);
 }
 
 function draw() {
-  background(200);
+  background(0);
 
   // enable orbiting with mouse
   orbitControl();
 
+  for (let star of stars) {
+    star.display();
+  }
+
+  for (let planet of planets) {
+    planet.display();
+  }
+}
+
+function drawSphere(x, y, z, radius){
+  push(); // enter local coordinate system
+  translate(x, y, z);
+  noStroke();
+  sphere(radius);
+  pop(); // exit local coordinate system (back to global coordinates)
 }
 
 // create class of star
@@ -33,12 +53,13 @@ class Star {
   constructor() {
     this.posX = random(-windowWidth, windowWidth);
     this.posY = random(-windowHeight, windowHeight);
-    this.size = random(1, 5);
+    this.posZ = random(-5000, 5000);
+    this.size = random(10, 25);
   }
 
   display() {
     fill(255);
-    sphere(this.size);
+    drawSphere(this.posX, this.posY, this.posZ, this.size);
   }
 }
 
@@ -47,12 +68,13 @@ class Planet {
   constructor() {
     this.posX = random(-windowWidth, windowWidth);
     this.posY = random(-windowHeight, windowHeight);
-    this.size = random(10, 15);
-    this.color = random();
+    this.posZ = random(-5000, 5000);
+    this.size = random(100, 150);
+    this.color = random(50, 255);
   }
 
   display() {
     fill(this.color);
-    sphere(this.size);
+    drawSphere(this.posX, this.posY, this.posZ, this.size);
   }
 }
