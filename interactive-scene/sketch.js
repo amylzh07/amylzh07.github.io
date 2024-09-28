@@ -5,9 +5,23 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+// To-Do list by priority:
+// 1. implement star rotation states
+// 2. mouse hover triggers glow
+// 3. keyboard triggers something... (black holes?)
+// 4. add textures and lights
+// 5. where is the sun?
+
 let shape;
 let stars = [];
 let planets = [];
+let planetTexture;
+let angle = 0;
+let starState;
+
+function preload() {
+  planetTexture = loadImage("planettexture.jpg"); 
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
@@ -61,6 +75,13 @@ class Star {
     fill(255);
     drawSphere(this.posX, this.posY, this.posZ, this.size);
   }
+
+ // shine() {
+  //  if (mouseOver) {
+
+   // }
+ // }
+
 }
 
 // create class of planet
@@ -70,11 +91,13 @@ class Planet {
     this.posY = random(-windowHeight, windowHeight);
     this.posZ = random(-5000, 5000);
     this.size = random(100, 150);
-    this.color = random(50, 255);
+    this.color = color(random(200), random(200), random(200));
   }
 
   display() {
-    fill(this.color);
+    tint(this.color);
+    texture(planetTexture);
     drawSphere(this.posX, this.posY, this.posZ, this.size);
+    
   }
 }
