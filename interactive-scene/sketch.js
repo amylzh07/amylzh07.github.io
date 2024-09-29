@@ -18,7 +18,6 @@ let comets = [];
 let planetTexture;
 let angle;
 let orbitState = "stationary";
-let starState = "glow";
 
 function preload() {
   planetTexture = loadImage("planettexture.jpg"); 
@@ -28,7 +27,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
   // create array with stars
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 500; i++) {
     stars.push(new Star());
   }
 
@@ -55,11 +54,10 @@ function draw() {
   }
 
   // draw Sun in center
-  emissiveMaterial("yellow");
+ // emissiveMaterial("yellow");
   fill("yellow");
   noStroke()
   sphere(200);
-  spotLight(255, 0, 0, 0, 0, 100, 0, 0, -1, PI / 32);
 
 }
 
@@ -78,12 +76,6 @@ function keyPressed () {
   else if (keyCode === 13) {  // change keys
     orbitState = "stationary";
   }
-  else if (keyCode === 27) {  // change keys
-    starState = "twinkle";
-  }
-  else if (keyCode === 38) {  // change keys
-    orbitState = "glow";
-  }
 }
 
 function mouseClick() {
@@ -99,20 +91,22 @@ class Star {
     this.posX = random(-windowWidth, windowWidth);
     this.posY = random(-windowHeight, windowHeight);
     this.posZ = random(-5000, 5000);
-    this.size = random(10, 20);
+    this.size = random(5, 15);
+    this.brightness = random(185, 255);
   }
 
   display() {
-    ambientLight(255); // 204, 229, 
-    emissiveMaterial(0, 0, 255);
-    // fill(255);
+    fill(this.brightness);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size)
+    this.size += random(-0.8, 0.8);
+    this.brightness += random(-50, 50);
 
-    if (starState === "glow") {
-      // enter glow here
+    if (dist(this.x, mouseX) < 50) {
+      this.brightness = 255;
     }
-    else if (starState = "twinkle") {
-      this.size += random(-0.8, 0.8);
+    else {
+      this.brightness = random(185, 255);
+      fill(this.brightness);
     }
   }
 }
@@ -148,7 +142,6 @@ class Comet {
     this.size = random(25, 50);
   }
 
-  display() {
-
-  }
+ // display() {
+ // }
 }
