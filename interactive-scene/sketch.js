@@ -7,9 +7,11 @@
 // - explored lighting and rotation using WEBGL 3D
 
 // To-Do list by priority:
-// 1. finish keyboard triggers
+// MVP done
+// extras
+// 1. mouse click for comets
 // 2. texture and light rendering for sun glow, stars glow
-// 3. comets animate
+// 3. sound
 
 let shape;
 let stars = [];
@@ -21,6 +23,8 @@ let orbitState = "stationary";
 
 function preload() {
   planetTexture = loadImage("planettexture.jpg"); 
+  solarTexture = loadImage("solartexture.jpg");
+  starTexture = loadImage("startexture.jpg")
 }
 
 function setup() {
@@ -54,11 +58,11 @@ function draw() {
   }
 
   // draw Sun in center
- // emissiveMaterial("yellow");
-  fill("yellow");
+   specularMaterial(255);
+ // tint("yellow");
+  texture(solarTexture);
   noStroke()
   sphere(200);
-
 }
 
 function drawCustomSphere(x, y, z, radius){
@@ -91,12 +95,15 @@ class Star {
     this.posX = random(-windowWidth, windowWidth);
     this.posY = random(-windowHeight, windowHeight);
     this.posZ = random(-5000, 5000);
-    this.size = random(5, 15);
-    this.brightness = random(185, 255);
+    this.size = random(5, 10);
+    this.brightness = random(105, 185);
   }
 
   display() {
-    fill(this.brightness);
+//    fill();
+    tint(this.brightness);
+    texture(starTexture);
+   // specularMaterial(255);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size)
     this.size += random(-0.8, 0.8);
     this.brightness += random(-50, 50);
@@ -105,7 +112,7 @@ class Star {
       this.brightness = 255;
     }
     else {
-      this.brightness = random(185, 255);
+      this.brightness = random(105, 185);
       fill(this.brightness);
     }
   }
@@ -122,6 +129,8 @@ class Planet {
   }
 
   display() {
+    normalMaterial(this.color);
+    pointLight(255, 255, 255, 200, -150, 200);
     tint(this.color);
     texture(planetTexture);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
