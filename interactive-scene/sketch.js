@@ -3,21 +3,22 @@
 // October 1, 2024
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// - implemented 3D using WEBGL
+// - explored lighting and rotation using WEBGL 3D
 
 // To-Do list by priority:
-// 1. implement star rotation states
-// 2. mouse hover triggers glow
-// 3. keyboard triggers something... (black holes?)
-// 4. add textures and lights
-// 5. where is the sun?
+// 1. finish keyboard triggers
+// 2. texture and light rendering for sun glow, stars glow
+// 3. comets animate
 
 let shape;
 let stars = [];
 let planets = [];
+let comets = [];
 let planetTexture;
-let angle = 0;
-let starState;
+let angle;
+let orbitState = "stationary";
+let starState = "glow";
 
 function preload() {
   planetTexture = loadImage("planettexture.jpg"); 
@@ -52,9 +53,17 @@ function draw() {
   for (let planet of planets) {
     planet.display();
   }
+
+  // draw Sun in center
+  emissiveMaterial("yellow");
+  fill("yellow");
+  noStroke()
+  sphere(200);
+  spotLight(255, 0, 0, 0, 0, 100, 0, 0, -1, PI / 32);
+
 }
 
-function drawSphere(x, y, z, radius){
+function drawCustomSphere(x, y, z, radius){
   push(); // enter local coordinate system
   translate(x, y, z);
   noStroke();
@@ -62,29 +71,53 @@ function drawSphere(x, y, z, radius){
   pop(); // exit local coordinate system (back to global coordinates)
 }
 
-// create class of star
+function keyPressed () {
+  if (keyCode === 32) { // change keys
+    orbitState = "orbit";
+  }
+  else if (keyCode === 13) {  // change keys
+    orbitState = "stationary";
+  }
+  else if (keyCode === 27) {  // change keys
+    starState = "twinkle";
+  }
+  else if (keyCode === 38) {  // change keys
+    orbitState = "glow";
+  }
+}
+
+function mouseClick() {
+  comets.push(new Comet);
+  for (let comet of comets) {
+    comet.display();
+  }
+}
+
+// create class for stars
 class Star {
   constructor() {
     this.posX = random(-windowWidth, windowWidth);
     this.posY = random(-windowHeight, windowHeight);
     this.posZ = random(-5000, 5000);
-    this.size = random(10, 25);
+    this.size = random(10, 20);
   }
 
   display() {
-    fill(255);
-    drawSphere(this.posX, this.posY, this.posZ, this.size);
+    ambientLight(255); // 204, 229, 
+    emissiveMaterial(0, 0, 255);
+    // fill(255);
+    drawCustomSphere(this.posX, this.posY, this.posZ, this.size)
+
+    if (starState === "glow") {
+      // enter glow here
+    }
+    else if (starState = "twinkle") {
+      this.size += random(-0.8, 0.8);
+    }
   }
-
- // shine() {
-  //  if (mouseOver) {
-
-   // }
- // }
-
 }
 
-// create class of planet
+// create class for planets
 class Planet {
   constructor() {
     this.posX = random(-windowWidth, windowWidth);
@@ -97,7 +130,25 @@ class Planet {
   display() {
     tint(this.color);
     texture(planetTexture);
-    drawSphere(this.posX, this.posY, this.posZ, this.size);
+    drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
     
+    if (orbitState === "orbit") {
+      angle = frameCount * 0.01; // change to addition because 0 * something is still 0
+      rotateX(angle);
+    }
+  }
+}
+
+// create class for shooting stars
+class Comet {
+  constructor() {
+    this.posX = mouseX
+    this.posY = mouseY
+    this.posZ = random(-5000, 5000);
+    this.size = random(25, 50);
+  }
+
+  display() {
+
   }
 }
