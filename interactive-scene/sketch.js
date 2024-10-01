@@ -19,7 +19,6 @@ let orbitState = "stationary";
 function preload() {
   planetTexture = loadImage("planettexture.jpg"); 
   solarTexture = loadImage("solartexture.jpg");
-//  starTexture = loadImage("startexture.jpg");
 }
 
 function setup() {
@@ -58,11 +57,11 @@ function draw() {
 }
 
 function drawCustomSphere(x, y, z, radius){
-  push(); // enter local coordinate system
+  push(); // enter new coordinate system
   translate(x, y, z);
   noStroke();
   sphere(radius);
-  pop(); // exit local coordinate system (back to global coordinates)
+  pop(); // go back to global coordinates
 }
 
 function keyPressed () {
@@ -79,7 +78,7 @@ class Star {
   constructor() {
     this.posX = random(-windowWidth, windowWidth);
     this.posY = random(-windowHeight, windowHeight);
-    this.posZ = random(-5000, 5000);
+    this.posZ = random(-8000, 8000);
     this.size = random(1, 3);
     this.brightness = random(105, 185);
   }
@@ -93,7 +92,7 @@ class Star {
     this.brightness += random(-50, 50);
 
     if (orbitState === "orbit") {
-      angle += 1;
+      angle += 0.01;
       rotateX(sin(angle));
     }
   }
@@ -117,28 +116,11 @@ class Planet {
     tint(this.color);
     texture(planetTexture);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
-    
-
 
     if (orbitState === "orbit") {
-      this.angle += this.orbitSpeed;
+      angle += 0.01;
+      rotateX(sin(angle));
     }
-
-    let orbitX = this.posX + cos(this.angle) * this.size; // Orbit radius on X axis
-    let orbitY = this.posY + sin(this.angle) * this.size; // Orbit radius on Y axis
-
-    push();
-
-    translate(orbitX, orbitY, this.posZ);
-    rotateX(frameCount * 0.01);
-    rotateY(frameCount * 0.01); 
-
-    pop();
-
-//    if (orbitState === "orbit") {
-  //    angle += 1;
-    //  rotateX(200 * sin(angle));
-  //  }
   }
 }
 
@@ -155,6 +137,5 @@ class Sun {
     specularMaterial(255);
     texture(solarTexture);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
-   // rotateY(frameCount * 0.01);
   }
 }
