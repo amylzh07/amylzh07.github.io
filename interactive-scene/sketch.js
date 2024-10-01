@@ -13,7 +13,7 @@ let sun;
 let planetTexture;
 let solarTexture;
 let starTexture;
-let angle;
+let angle = 0;
 let orbitState = "stationary";
 
 function preload() {
@@ -55,7 +55,6 @@ function draw() {
   sun = new Sun();
 
   sun.display();
-
 }
 
 function drawCustomSphere(x, y, z, radius){
@@ -87,7 +86,6 @@ class Star {
 
   display() {
     tint(this.brightness);
-//    texture(starTexture);
     fill(255);
     emissiveMaterial(20, 90, 144);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
@@ -95,8 +93,8 @@ class Star {
     this.brightness += random(-50, 50);
 
     if (orbitState === "orbit") {
-      angle = frameCount * 0.01; // change to addition because 0 * something is still 0
-      rotateX(angle);
+      angle += 1;
+      rotateX(sin(angle));
     }
   }
 }
@@ -109,6 +107,8 @@ class Planet {
     this.posZ = random(-5000, 5000);
     this.size = random(100, 150);
     this.color = color(random(200), random(200), random(200));
+    this.orbitSpeed = random(0.01, 0.03);
+    this.angle = random(360);
   }
 
   display() {
@@ -118,10 +118,27 @@ class Planet {
     texture(planetTexture);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
     
+
+
     if (orbitState === "orbit") {
-      angle = frameCount * 0.01; // change to addition because 0 * something is still 0
-      rotateX(angle);
+      this.angle += this.orbitSpeed;
     }
+
+    let orbitX = this.posX + cos(this.angle) * this.size; // Orbit radius on X axis
+    let orbitY = this.posY + sin(this.angle) * this.size; // Orbit radius on Y axis
+
+    push();
+
+    translate(orbitX, orbitY, this.posZ);
+    rotateX(frameCount * 0.01);
+    rotateY(frameCount * 0.01); 
+
+    pop();
+
+//    if (orbitState === "orbit") {
+  //    angle += 1;
+    //  rotateX(200 * sin(angle));
+  //  }
   }
 }
 
@@ -138,5 +155,6 @@ class Sun {
     specularMaterial(255);
     texture(solarTexture);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
+   // rotateY(frameCount * 0.01);
   }
 }
