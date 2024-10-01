@@ -3,9 +3,8 @@
 // October 1, 2024
 //
 // Extra for Experts:
-// - implemented 3D using WEBGL
-// - explored lighting and rotation using WEBGL 3D
-// - added p5.js sound library
+// - implemented 3D using WEBGL, including adding lighitng, textures, rotation,
+// and use of x-y axes alongside z-axis, allowing for incorporation of rotation
 
 let spaceSound;
 let stars = [];
@@ -68,11 +67,11 @@ function draw() {
 }
 
 function drawCustomSphere(x, y, z, radius){
-  push(); // enter new coordinate system
+  push(); // enter new coordinates to randomize object position
   translate(x, y, z);
   noStroke();
   sphere(radius);
-  pop(); // go back to global coordinates
+  pop(); // go back to original coordinates
 }
 
 // change between orbiting and stationary states
@@ -99,10 +98,13 @@ class Star {
     tint(this.brightness);
     fill(255);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
+
+    // twinkle effect
     this.size = this.size + sin(twinkle);
     twinkle += 0.1;
     this.brightness = this.brightness + sin(twinkle);
 
+    // orbit movement
     if (orbitState === "orbit") {
       angle = frameCount * 0.0005;
       rotateY(angle);
@@ -127,6 +129,7 @@ class Planet {
     texture(planetTexture);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
 
+    // orbit movement
     if (orbitState === "orbit") {
       angle = frameCount * 0.0005;
       rotateY(angle);
