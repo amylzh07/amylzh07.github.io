@@ -6,25 +6,20 @@
 // - implemented 3D using WEBGL
 // - explored lighting and rotation using WEBGL 3D
 
-// To-Do list by priority:
-// MVP done
-// extras
-// 1. mouse click for comets
-// 2. texture and light rendering for sun glow, stars glow
-// 3. sound
-
 let shape;
 let stars = [];
 let planets = [];
-let comets = [];
+let sun;
 let planetTexture;
+let solarTexture;
+let starTexture;
 let angle;
 let orbitState = "stationary";
 
 function preload() {
   planetTexture = loadImage("planettexture.jpg"); 
   solarTexture = loadImage("solartexture.jpg");
-  starTexture = loadImage("startexture.jpg")
+//  starTexture = loadImage("startexture.jpg");
 }
 
 function setup() {
@@ -57,12 +52,10 @@ function draw() {
     planet.display();
   }
 
-  // draw Sun in center
-   specularMaterial(255);
- // tint("yellow");
-  texture(solarTexture);
-  noStroke()
-  sphere(200);
+  sun = new Sun();
+
+  sun.display();
+
 }
 
 function drawCustomSphere(x, y, z, radius){
@@ -74,18 +67,11 @@ function drawCustomSphere(x, y, z, radius){
 }
 
 function keyPressed () {
-  if (keyCode === 32) { // change keys
+  if (keyCode === 32) { // press space
     orbitState = "orbit";
   }
-  else if (keyCode === 13) {  // change keys
+  else if (keyCode === 13) {  // press enter
     orbitState = "stationary";
-  }
-}
-
-function mouseClick() {
-  comets.push(new Comet);
-  for (let comet of comets) {
-    comet.display();
   }
 }
 
@@ -95,25 +81,22 @@ class Star {
     this.posX = random(-windowWidth, windowWidth);
     this.posY = random(-windowHeight, windowHeight);
     this.posZ = random(-5000, 5000);
-    this.size = random(5, 10);
+    this.size = random(1, 3);
     this.brightness = random(105, 185);
   }
 
   display() {
-//    fill();
     tint(this.brightness);
-    texture(starTexture);
-   // specularMaterial(255);
-    drawCustomSphere(this.posX, this.posY, this.posZ, this.size)
+//    texture(starTexture);
+    fill(255);
+    emissiveMaterial(20, 90, 144);
+    drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
     this.size += random(-0.8, 0.8);
     this.brightness += random(-50, 50);
 
-    if (dist(this.x, mouseX) < 50) {
-      this.brightness = 255;
-    }
-    else {
-      this.brightness = random(105, 185);
-      fill(this.brightness);
+    if (orbitState === "orbit") {
+      angle = frameCount * 0.01; // change to addition because 0 * something is still 0
+      rotateX(angle);
     }
   }
 }
@@ -129,8 +112,8 @@ class Planet {
   }
 
   display() {
-    normalMaterial(this.color);
-    pointLight(255, 255, 255, 200, -150, 200);
+    emissiveMaterial(this.color);
+    pointLight(255, 255, 255, mouseX, mouseY, 200);
     tint(this.color);
     texture(planetTexture);
     drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
@@ -142,15 +125,18 @@ class Planet {
   }
 }
 
-// create class for shooting stars
-class Comet {
+// create class for Sun
+class Sun {
   constructor() {
-    this.posX = mouseX
-    this.posY = mouseY
-    this.posZ = random(-5000, 5000);
-    this.size = random(25, 50);
+    this.posX = 0;
+    this.posY = 0;
+    this.posZ = 0;
+    this.size = 200;
   }
 
- // display() {
- // }
+  display() {
+    specularMaterial(255);
+    texture(solarTexture);
+    drawCustomSphere(this.posX, this.posY, this.posZ, this.size);
+  }
 }
