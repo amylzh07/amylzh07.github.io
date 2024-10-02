@@ -2,9 +2,12 @@
 // Amy L Zhang
 // October 1, 2024
 //
-// Extra for Experts:
+// Extras for Experts:
 // - implemented 3D using WEBGL, including adding lighitng, textures, rotation,
 // and use of x-y axes alongside z-axis, allowing for incorporation of rotation
+// - explored classes to store attributes for specific objects and displayed by
+// iterating through an array
+// - featured use of p5.js sound library for background music
 
 let spaceSound;
 let stars = [];
