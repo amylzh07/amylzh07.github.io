@@ -7,6 +7,7 @@
 - [Bouncing Balls](bouncing-balls)
 - [Perlin Noise Ball](perlin)
 - [Terrain Generation](terrain)
+- [Bubbles](bubbles)
 
 ## Projects
 - [Interactive Scene](interactive-scene)
