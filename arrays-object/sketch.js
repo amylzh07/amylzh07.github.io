@@ -14,12 +14,21 @@ function setup() {
 }
 
 function draw() {
-  background(0);
-  //  box(windowWidth, windowHeight);
+  orbitControl();
 
-  box(100, 100);
+  background(0);
+  push();
+  translate(0, -windowHeight, 0);
+  fill(220);
+  box(windowWidth, windowHeight);
+  pop();
+
+  fill(0);
   translate(posX, 0, posZ);
+  box(100, 100);
+
   moveCharacter();
+
 }
 
 function moveCharacter() {
