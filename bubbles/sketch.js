@@ -47,7 +47,6 @@ function addDeath(_x, _y) {
   deathLocations.push(deathSpot);
 }
 
-
 function clickedInBubble(x, y, theBubble) {
   let distanceAway = dist(x, y, theBubble.x, theBubble.y);
   if (distanceAway < theBubble.radius) {

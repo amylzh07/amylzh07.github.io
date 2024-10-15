@@ -8,8 +8,13 @@ let posZ = 0;
 let posX = 0;
 let dx = 5;
 let dz = 5;
+let accel = -5;
+let gravity = 9.8;
 
+let WIDTH_KEY = 50;
+let HEIGHT_KEY = 50;
 
+let theKeyboard = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
@@ -30,6 +35,7 @@ function draw() {
   box(10, 10);
 
   moveCharacter();
+  jumpCharacter();
 
 }
 
@@ -47,5 +53,43 @@ function moveCharacter() {
     posX -= dx;
   }
 }
+
+function jumpCharacter() {
+
+}
+
+function checkCollision() {
+
+// function checkCollision() {
+//  if (redCubeBB.intersectsBox(blackCubeBB)) {
+//    blackCube.material.transparent = true;
+//    blackCube.material.opacity = 0.5;
+//    blackCube.material.color = new THREE.Color(Math.random * 0xffffff);
+//  } else {
+//    blackCube.material.opacity = 1;
+//  }
+}
+
+// Adding checkCollision() method in our animate() function
+//function animate() {
+//checkCollision()
+//requestAnimationFrame(animate);
+//renderer.render(scene, camera);
+//}
+//animate();
+
+function spawnKeyboard() {
+  let someKey = {
+    x: random(width),
+    y: random(height),
+    width: WIDTH_KEY,
+    height: HEIGHT_KEY,
+
+  };
+
+}
+
+// add acceleration to dy
+// uses frame refresh to add 9.8
 
 // translate while moving. when stopped and displaying, push()
