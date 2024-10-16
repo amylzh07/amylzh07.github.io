@@ -11,13 +11,15 @@ let dz = 5;
 let accel = -5;
 let gravity = 9.8;
 
-let WIDTH_KEY = 50;
-let HEIGHT_KEY = 50;
 
 let theKeyboard = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
+
+  for (let i = 0; i < 15; i++) {
+    spawnKeyboard(i);
+  }
 }
 
 function draw() {
@@ -26,7 +28,7 @@ function draw() {
   background(0);
   push();
   translate(0, windowHeight / 2, 0);
-  fill(220);
+  fill(255);
   box(windowWidth, windowHeight);
   pop();
 
@@ -36,6 +38,8 @@ function draw() {
 
   moveCharacter();
   jumpCharacter();
+
+  showKeyboard();
 
 }
 
@@ -78,16 +82,26 @@ function checkCollision() {
 //}
 //animate();
 
-function spawnKeyboard() {
+function spawnKeyboard(position) {
   let someKey = {
-    x: random(width),
-    y: random(height),
-    width: WIDTH_KEY,
-    height: HEIGHT_KEY,
-
+    x: 15,
+    y: 50,
+    pos: position,
   };
-
+  theKeyboard.push(someKey);
 }
+
+function showKeyboard() {
+  for (let key of theKeyboard) {
+    fill(200, 0, 0);
+    noStroke();
+    push();
+    translate(0 + key.x * key.pos, 20, 20);
+    box(key.x, key.y);
+    pop();
+  }
+}
+
 
 // add acceleration to dy
 // uses frame refresh to add 9.8
