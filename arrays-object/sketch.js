@@ -4,18 +4,20 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
-let posZ = 0;
-let posX = 0;
-let dx = 5;
-let dz = 5;
+
 let accel = -5;
 let gravity = 9.8;
 
 
+let theCharacter = [];
 let theKeyboard = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
+
+  for (let i = 0; i < 1; i++) {
+    theCharacter.push(new Character());
+  }
 
   for (let i = 0; i < 15; i++) {
     spawnKeyboard(i);
@@ -29,34 +31,49 @@ function draw() {
   push();
   translate(0, windowHeight / 2, 0);
   fill(255);
-  box(windowWidth, windowHeight);
+  box(width, height);
   pop();
 
-  fill(0);
-  translate(posX, 0, posZ);
-  box(10, 10);
+  for (let character of theCharacter) {
+    character.display();
+  }
 
-  moveCharacter();
+  // moveCharacter();
   jumpCharacter();
 
   showKeyboard();
-
 }
 
-function moveCharacter() {
-  if (keyIsDown(83)) { // move further (Z-axis)
-    posZ += dz;
+class Character {
+  constructor() {
+    this.posX = 0;
+    this.posZ = 0;
+    this.dx = 5;
+    this.dz = 5;
   }
-  else if (keyIsDown(87)){ // move closer (Z-axis)
-    posZ -= dz;
+
+  display() {
+    fill(0);
+    translate(this.posX, 0, this.posZ);
+    box(10, 10);
   }
-  else if (keyIsDown(68)){ // move right (X-axis)
-    posX += dx;
-  }
-  else if (keyIsDown(65)){ // move left(X-axis)
-    posX -= dx;
+
+  move() {
+    if (keyIsDown(83)) { // move further (Z-axis)
+      this.posZ += this.dz;
+    }
+    else if (keyIsDown(87)){ // move closer (Z-axis)
+      this.posZ -= this.dz;
+    }
+    else if (keyIsDown(68)){ // move right (X-axis)
+      this.posX += this.dx;
+    }
+    else if (keyIsDown(65)){ // move left(X-axis)
+      this.posX -= this.dx;
+    }
   }
 }
+
 
 function jumpCharacter() {
 
