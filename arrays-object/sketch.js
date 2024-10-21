@@ -6,8 +6,10 @@
 // - describe what you did to take this project "above and beyond"
 
 let accel = -5;
-let gravity = 9.8;
+let gravity = 0.5;
 
+let jumpStrength = 10;
+let groundLevel = 0;
 
 let theCharacter = [];
 let theKeyboard = [];
@@ -36,26 +38,37 @@ function draw() {
 
   for (let character of theCharacter) {
     character.display();
+    character.move();
+    // move and apply gravity
   }
 
-  // moveCharacter();
-  jumpCharacter();
-
   showKeyboard();
+
+  // Check for character-key collisions
+  for (let character of theCharacter) {
+    for (let key of theKeyboard) {
+      checkCollision(character, key);
+    }
+  }
 }
 
 class Character {
   constructor() {
     this.posX = 0;
+    this.posY = 0;
     this.posZ = 0;
     this.dx = 5;
+    this.dy = 0;
     this.dz = 5;
+    this.isJumping = false;  // tracking jump state
   }
 
   display() {
+    push();
     fill(0);
-    translate(this.posX, 0, this.posZ);
-    box(10, 10);
+    translate(this.posX, this.posY, this.posZ);
+    box(10, 10, 10);
+    pop();
   }
 
   move() {
@@ -70,6 +83,11 @@ class Character {
     }
     else if (keyIsDown(65)){ // move left(X-axis)
       this.posX -= this.dx;
+    }
+
+    if (keyIsDown(32) && !this.isJumping) {
+      this.isJumping = true;
+      this.dy = jumpStrength;
     }
   }
 }
