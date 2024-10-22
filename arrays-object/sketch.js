@@ -5,14 +5,35 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let accel = -5;
 let gravity = 0.5;
-
-let jumpStrength = 10;
-let groundLevel = 0;
+let accel = 10;
+let theGround = 0;
 
 let theCharacter = [];
-let theKeyboard = [];
+let whiteKeys = [];
+let blackKeys = [];
+let blackKeySpaces = [1, 2, 4, 5, 6]; // accounts for no black keys between E and F, B and C
+let keyWidth = 30;
+let keyHeight = 100;
+
+let whiteKeySounds = [];
+let blackKeySounds = [];
+
+function preload() {
+  whiteKeySounds.push(loadSound('assets/piano_key_C.mp3'));
+  whiteKeySounds.push(loadSound('assets/piano_key_D.mp3'));
+  whiteKeySounds.push(loadSound('assets/piano_key_E.mp3'));
+  whiteKeySounds.push(loadSound('assets/piano_key_F.mp3'));
+  whiteKeySounds.push(loadSound('assets/piano_key_G.mp3'));
+  whiteKeySounds.push(loadSound('assets/piano_key_A.mp3'));
+  whiteKeySounds.push(loadSound('assets/piano_key_B.mp3'));
+
+  blackKeySounds.push(loadSound('assets/piano_key_Aflat.mp3'));
+  blackKeySounds.push(loadSound('assets/piano_key_Bflat.mp3'));
+  blackKeySounds.push(loadSound('assets/piano_key_Dflat.mp3'));
+  blackKeySounds.push(loadSound('assets/piano_key_Eflat.mp3'));
+  blackKeySounds.push(loadSound('assets/piano_key_Gflat.mp3'));
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
@@ -21,33 +42,37 @@ function setup() {
     theCharacter.push(new Character());
   }
 
-  for (let i = 0; i < 15; i++) {
-    spawnKeyboard(i);
-  }
+  spawnKeys();
 }
 
 function draw() {
-  orbitControl();
-
   background(0);
+
+  pointLight(255, 255, 255, 0, -200, 100);
+
+  camera(0, -200, 200, 0, 0, 0, 0, 1, 0);
+
   push();
   translate(0, windowHeight / 2, 0);
-  fill(255);
+  fill(140, 140, 255);
   box(width, height);
   pop();
 
   for (let character of theCharacter) {
     character.display();
     character.move();
-    // move and apply gravity
+    character.addGravity();
   }
+ 
+  showWhiteKeys();
+  showBlackKeys();
 
-  showKeyboard();
-
-  // Check for character-key collisions
   for (let character of theCharacter) {
-    for (let key of theKeyboard) {
-      checkCollision(character, key);
+    for (let i = 0; i < whiteKeys.length; i++) {
+      checkCollision(character, whiteKeys[i], i, "white");
+    }
+    for (let i = 0; i < blackKeys.length; i++) {
+      checkCollision(character, blackKeys[i], i, "black");
     }
   }
 }
@@ -65,8 +90,8 @@ class Character {
 
   display() {
     push();
-    fill(0);
-    translate(this.posX, this.posY, this.posZ);
+    translate(this.posX, -this.posY, this.posZ);
+    normalMaterial();
     box(10, 10, 10);
     pop();
   }
@@ -87,58 +112,104 @@ class Character {
 
     if (keyIsDown(32) && !this.isJumping) {
       this.isJumping = true;
-      this.dy = jumpStrength;
+      this.dy = accel;
+    }
+  }
+
+  addGravity() {
+    if (this.isJumping) {
+      this.dy -= gravity;
+      this.posY += this.dy;
+
+      if (this.posY <= theGround) {
+        this.isJumping = false;
+        this.dy = 0;
+        this.posY = theGround;
+      }
     }
   }
 }
 
+function checkCollision(character, key, index, keyType) {
+  let keyTop = -key.y;
+  let keyBottom = key.y;
+  let keyXStart = key.x - key.x / 2;
+  let keyXEnd = key.x + key.x / 2;
+  let keyLength = key.h;
 
-function jumpCharacter() {
+  if (character.posY <= keyTop && character.posY >= keyBottom 
+    && character.posX > keyXStart && character.posX < keyXEnd
+    && character.posZ < keyLength && character.posZ > -keyLength) {
+    theGround = keyTop;
+    character.isJumping = false;
+    character.dy = 0;
 
+    if (keyType === 'white') {
+      if (!whiteKeySounds[index % whiteKeySounds.length].isPlaying()) {
+        whiteKeySounds[index % whiteKeySounds.length].play();
+      }
+    }
+    
+    else if (keyType === 'black') {
+      if (!blackKeySounds[index % blackKeySounds.length].isPlaying()) {
+        blackKeySounds[index % blackKeySounds.length].play();
+      }
+    }
+  } 
+  
+  else {
+    theGround = 0;
+  }
 }
 
-function checkCollision() {
+function spawnKeys() {  
+  const totalWidth = 15 * keyWidth;
 
-// function checkCollision() {
-//  if (redCubeBB.intersectsBox(blackCubeBB)) {
-//    blackCube.material.transparent = true;
-//    blackCube.material.opacity = 0.5;
-//    blackCube.material.color = new THREE.Color(Math.random * 0xffffff);
-//  } else {
-//    blackCube.material.opacity = 1;
-//  }
+  for (let i = 0; i < 15; i++) {
+    let whiteKey = {
+      x: (i * keyWidth) - (totalWidth / 2),
+      y: keyHeight / 4,
+      z: 0,
+      w: keyWidth,
+      h: keyHeight,
+      color: 255,
+    };
+    whiteKeys.push(whiteKey);
+  }
+
+  for (let i = 0; i < 15; i++) {
+    if (blackKeySpaces.includes(i % 7)) {
+      let blackKey = {
+        x: (i * keyWidth) - (totalWidth / 2) + keyWidth, 
+        y: 0,
+        z: -10,
+        w: keyWidth * 0.6,
+        h: keyHeight * 0.67,
+        color: 0,
+      };
+      blackKeys.push(blackKey);
+    }
+  }
 }
 
-// Adding checkCollision() method in our animate() function
-//function animate() {
-//checkCollision()
-//requestAnimationFrame(animate);
-//renderer.render(scene, camera);
-//}
-//animate();
-
-function spawnKeyboard(position) {
-  let someKey = {
-    x: 15,
-    y: 50,
-    pos: position,
-  };
-  theKeyboard.push(someKey);
-}
-
-function showKeyboard() {
-  for (let key of theKeyboard) {
-    fill(200, 0, 0);
+function showWhiteKeys() {
+  for (let key of whiteKeys) {
+    fill(key.color);
     noStroke();
     push();
-    translate(0 + key.x * key.pos, 20, 20);
-    box(key.x, key.y);
+    translate(key.x, key.y, key.z);
+    box(key.w, key.h);
     pop();
   }
 }
 
-
-// add acceleration to dy
-// uses frame refresh to add 9.8
-
-// translate while moving. when stopped and displaying, push()
+function showBlackKeys() {
+  for (let key of blackKeys) {
+    fill(key.color);
+    noStroke();
+    push();
+    translate(key.x, key.y, key.z);
+    box(key.w, key.h);
+    pop();
+  }
+}
