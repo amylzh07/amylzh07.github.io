@@ -9,7 +9,7 @@
 
 let grid;
 let cellSize;
-const GRID_SIZE = 50;
+const GRID_SIZE = 5;
 
 function setup() {
   if (windowWidth < windowHeight) {
@@ -22,30 +22,49 @@ function setup() {
   grid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  cellSize = height / GRID_SIZE;
+}
+
 function draw() {
   background(220);
   displayGrid();
-  keyPressed();
 }
 
 function displayGrid() {
   for (let y = 0; y < GRID_SIZE; y++) {
     for (let x = 0; x < GRID_SIZE; x++) {
       if (grid[y][x] === 0) {
-        fill("white");
+        fill("black");  // 0 is black
       } 
       else if (grid[y][x] === 1) {
-        fill("black");
+        fill("white"); // 1 is white
       }
       square(x * cellSize, y * cellSize, cellSize);
-
-      if (mouseIsPressed && x * cellSize < mouseX &&
-        x * cellSize + cellSize > mouseX
-        && y * cellSize < mouseY && 
-        y * cellSize + cellSize > mouseY) {
-          grid[y][x] = Math.abs(grid[y][x] - 1);
-      }
     }
+  }
+}
+
+function mousePressed() {
+  let x = Math.floor(mouseX/cellSize);
+  let y = Math.floor(mouseY/cellSize);
+
+  // toggle self
+  toggleCell(x, y);
+
+  // toggle neighbours
+  toggleCell(x - 1, y);
+  toggleCell(x + 1, y);
+  toggleCell(x, y - 1);
+  toggleCell(x, y + 1);
+}
+
+function toggleCell(x, y) {
+  // make sure cell is in the grid (edge casing)
+
+  if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
+    grid[y][x] = Math.abs(grid[y][x] - 1);
   }
 }
 
@@ -67,13 +86,7 @@ function generateRandomGrid(cols, rows) {
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
     for (let x = 0; x < cols; x++) {
-      // make it a 1 half the time, 0 half the time
-      if (random(100) < 50) {
-        newGrid[y].push(1);
-      }
-      else {
-        newGrid[y].push(0);
-      }
+      newGrid[y].push(0);
     }
   }
 
