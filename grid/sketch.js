@@ -38,6 +38,13 @@ function displayGrid() {
         fill("black");
       }
       square(x * cellSize, y * cellSize, cellSize);
+
+      if (mouseIsPressed && x * cellSize < mouseX &&
+        x * cellSize + cellSize > mouseX
+        && y * cellSize < mouseY && 
+        y * cellSize + cellSize > mouseY) {
+          grid[y][x] = Math.abs(grid[y][x] - 1);
+      }
     }
   }
 }
@@ -97,22 +104,4 @@ function generateDarkGrid(cols, rows) {
   }
 
   return newGrid;
-}
-
-function mouseClicked() {
-  for (let y = 0; y < GRID_SIZE; y++) {
-    for (let x = 0; x < GRID_SIZE; x++) {
-      if ((grid[y][x] * cellSize >= mouseX &&
-        (grid[y][x] + 1) * cellSize <= mouseX)
-        && (grid[y] * cellSize >= mouseY && 
-          (grid[y] + 1) * cellSize <= mouseY )) {
-        if (grid[y][x] === 0) {
-          grid[y][x] = 1;
-        }
-        else {
-          grid[y][x] = 0;
-        }
-      }
-    }
-  }
 }
