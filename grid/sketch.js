@@ -7,6 +7,8 @@
 //             [1, 0, 0, 1],
 //             [1, 1, 1, 1]];
 
+// took out randomized black + white, please add in
+
 let grid;
 let cellSize;
 const GRID_SIZE = 5;
@@ -99,7 +101,7 @@ function generateEmptyGrid(cols, rows) {
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
     for (let x = 0; x < cols; x++) {
-      newGrid[y].push(0);
+      newGrid[y].push(1);
     }
   }
 
@@ -112,7 +114,7 @@ function generateDarkGrid(cols, rows) {
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
     for (let x = 0; x < cols; x++) {
-      newGrid[y].push(1);
+      newGrid[y].push(0);
     }
   }
 
