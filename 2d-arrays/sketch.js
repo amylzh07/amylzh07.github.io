@@ -4,7 +4,10 @@
 
 let checkerboard;
 let cellSize;
-const GRID_SIZE = 25;
+const GRID_SIZE = 8;
+const WHITE_TILE = 0;
+const BLACK_TILE = 1;
+let isWhite = true;
 
 // draw board
 // move pieces (turn by turn)
@@ -18,7 +21,7 @@ function setup() {
     createCanvas(windowHeight, windowHeight);
   }
   cellSize = height / GRID_SIZE;
-  checkerboard = generateRandomGrid(GRID_SIZE, GRID_SIZE);
+  checkerboard = generateCheckerboard(GRID_SIZE, GRID_SIZE);
 }
 
 function windowResized() {
@@ -34,12 +37,13 @@ function draw() {
 function displayCheckerboard() {
   for (let y = 0; y < GRID_SIZE; y++) {
     for (let x = 0; x < GRID_SIZE; x++) {
-      if (grid[y][x] === 0) {
-        fill("black");  // 0 is black
+      if (checkerboard[y][x] === WHITE_TILE) {
+        fill("white");
       } 
-      else if (grid[y][x] === 1) {
-        fill("white"); // 1 is white
+      else if (checkerboard[y][x] === BLACK_TILE) {
+        fill("black");
       }
+      noStroke();
       square(x * cellSize, y * cellSize, cellSize);
     }
   }
@@ -47,23 +51,30 @@ function displayCheckerboard() {
 
 function mousePressed() {
   // move checkers
+
 }
 
 function keyPressed() {
   if (key === " ") {
-    grid = generateCheckerboard(GRID_SIZE, GRID_SIZE);
+    checkerboard = generateCheckerboard(GRID_SIZE, GRID_SIZE);
   }
 }
 
 function generateCheckerboard(cols, rows) {
-  let newGrid = [];
+  let newBoard = [];
 
   for (let y = 0; y < rows; y++) {
-    newGrid.push([]);
+    newBoard.push([]);
     for (let x = 0; x < cols; x++) {
-      newGrid[y].push(0);
+      if (isWhite) {
+        newBoard[y].push(WHITE_TILE);
+      }
+      else {
+        newBoard[y].push(BLACK_TILE);
+      }
+      isWhite = !isWhite;
     }
+    isWhite = !isWhite;
   }
-
-  return newGrid;
+  return newBoard;
 }
