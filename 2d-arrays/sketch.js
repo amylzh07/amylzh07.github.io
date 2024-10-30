@@ -1,13 +1,22 @@
 // AI Checkers
 // Amy (Lening) Zhang
-// Due Date Here
+// Nov 6, 2024
 
 let checkerboard;
 let cellSize;
 const GRID_SIZE = 8;
 const WHITE_TILE = 0;
-const BLACK_TILE = 1;
+const GRAY_TILE = 1;
 let isWhite = true;
+
+let offset = 14;
+
+let turns = ["r", "b"]; // hold turns
+
+let activePiece;
+
+let redCheckers = [];
+let blackCheckers = [];
 
 // draw board
 // move pieces (turn by turn)
@@ -22,6 +31,18 @@ function setup() {
   }
   cellSize = height / GRID_SIZE;
   checkerboard = generateCheckerboard(GRID_SIZE, GRID_SIZE);
+
+  // create checkers pieces
+  
+  let theColor = "red";
+  for (let i = 0; i < 12; i++) {
+    redCheckers.push(new Checkers(theColor));
+  }
+
+  theColor = "black";
+  for (let i = 0; i < 12; i++) {
+    blackCheckers.push(new Checkers(theColor));
+  }
 }
 
 function windowResized() {
@@ -32,6 +53,11 @@ function windowResized() {
 function draw() {
   background(220);
   displayCheckerboard();
+
+  for (let redChecker of redCheckers) {
+    redChecker.display();
+  }
+
 }
 
 function displayCheckerboard() {
@@ -40,8 +66,8 @@ function displayCheckerboard() {
       if (checkerboard[y][x] === WHITE_TILE) {
         fill("white");
       } 
-      else if (checkerboard[y][x] === BLACK_TILE) {
-        fill("black");
+      else if (checkerboard[y][x] === GRAY_TILE) {
+        fill("gray");
       }
       noStroke();
       square(x * cellSize, y * cellSize, cellSize);
@@ -50,14 +76,9 @@ function displayCheckerboard() {
 }
 
 function mousePressed() {
-  // move checkers
+  let x = Math.floor(mouseX/cellSize);
+  let y = Math.floor(mouseY/cellSize);
 
-}
-
-function keyPressed() {
-  if (key === " ") {
-    checkerboard = generateCheckerboard(GRID_SIZE, GRID_SIZE);
-  }
 }
 
 function generateCheckerboard(cols, rows) {
@@ -70,11 +91,35 @@ function generateCheckerboard(cols, rows) {
         newBoard[y].push(WHITE_TILE);
       }
       else {
-        newBoard[y].push(BLACK_TILE);
+        newBoard[y].push(GRAY_TILE);
       }
       isWhite = !isWhite;
     }
     isWhite = !isWhite;
   }
   return newBoard;
+}
+
+class Checkers {
+  constructor(theColor) {
+    this.x = 0;
+    this.y = 0;
+    this.r = cellSize / 2;
+    this.color = theColor;
+  }
+
+  display() {
+    if (this.color === "red") {
+      fill("red");
+    }
+    if (this.color === "black") {
+      fill("black");
+    }
+    circle(this.x + this.r, this.y + this.r, 2 * this.r - offset);
+  }
+
+}
+
+function moveCheckers() {
+
 }
