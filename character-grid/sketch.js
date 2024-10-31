@@ -52,7 +52,6 @@ function displayGrid() {
       if (grid[y][x] === IMPASSABLE) {
         // fill("black");  // 0 is black
         image(grassImg, x * cellSize, y * cellSize);
-
       } 
       else if (grid[y][x] === OPEN_TILE) {
         // fill("white"); // 1 is white

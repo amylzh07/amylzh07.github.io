@@ -18,9 +18,15 @@ let activePiece;
 let redCheckers = [];
 let blackCheckers = [];
 
-// draw board
-// move pieces (turn by turn)
-// implement AI move system
+// to do:
+// build the board
+// place checkers pieces on grid
+// move piece diagonally
+// capture opponent's piece
+// implement turn by turn
+// determine AI move system
+// display the count of piece for each player
+// display the winner at the end of the game
 
 function setup() {
   if (windowWidth < windowHeight) {
@@ -32,11 +38,16 @@ function setup() {
   cellSize = height / GRID_SIZE;
   checkerboard = generateCheckerboard(GRID_SIZE, GRID_SIZE);
 
-  // create checkers pieces
+  // create checkers pieces (red, black)
+  // loop through top three grid (0, 2 for red) (bottom 3 for black)
+
   
+
+
+  // create checkers pieces
   let theColor = "red";
   for (let i = 0; i < 12; i++) {
-    redCheckers.push(new Checkers(theColor));
+    redCheckers.push(new Checkers(theColor, x, y));
   }
 
   theColor = "black";
