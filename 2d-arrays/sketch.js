@@ -18,15 +18,29 @@ let activePiece;
 let redCheckers = [];
 let blackCheckers = [];
 
+let startBoard = [ 
+  [0, "r", 0, "r", 0, "r", 0, "r"],
+  ["r", 0, "r", 0, "r", 0, "r", 0],
+  [0, "r", 0, "r", 0, "r", 0, "r"],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  ["b", 0, "b", 0, "b", 0, "b", 0],
+  [0, "b", 0, "b", 0, "b", 0, "b"],
+  ["b", 0, "b", 0, "b", 0, "b", 0],
+];
+
 // to do:
-// build the board
-// place checkers pieces on grid
+// DEBUG!!! + place checkers pieces on grid (priority nov 4. figure out how to place in correct position)
 // move piece diagonally
 // capture opponent's piece
 // implement turn by turn
 // determine AI move system
 // display the count of piece for each player
 // display the winner at the end of the game
+
+// function preload() {
+//  boardFile = loadStrings("board.txt");
+//}
 
 function setup() {
   if (windowWidth < windowHeight) {
@@ -38,22 +52,25 @@ function setup() {
   cellSize = height / GRID_SIZE;
   checkerboard = generateCheckerboard(GRID_SIZE, GRID_SIZE);
 
-  // create checkers pieces (red, black)
-  // loop through top three grid (0, 2 for red) (bottom 3 for black)
-
-  
-
-
   // create checkers pieces
   let theColor = "red";
-  for (let i = 0; i < 12; i++) {
-    redCheckers.push(new Checkers(theColor, x, y));
+  for (let y = 0; y < startBoard.length; y++) {
+    for (let x = 0; x < startBoard.length; x++) {
+      if (startBoard[y][x] === "r") {
+        redCheckers.push(new Checkers(theColor, y, x));
+      }
+    }
   }
 
   theColor = "black";
-  for (let i = 0; i < 12; i++) {
-    blackCheckers.push(new Checkers(theColor));
+  for (let y = 0; y < startBoard.length; y++) {
+    for (let x = 0; x < startBoard.length; x++) {
+      if (startBoard[y][x] === "b") {
+        blackCheckers.push(new Checkers(theColor, y, x));
+      }
+    }
   }
+
 }
 
 function windowResized() {
@@ -89,7 +106,6 @@ function displayCheckerboard() {
 function mousePressed() {
   let x = Math.floor(mouseX/cellSize);
   let y = Math.floor(mouseY/cellSize);
-
 }
 
 function generateCheckerboard(cols, rows) {
@@ -112,9 +128,9 @@ function generateCheckerboard(cols, rows) {
 }
 
 class Checkers {
-  constructor(theColor) {
-    this.x = 0;
-    this.y = 0;
+  constructor(theColor, x, y) {
+    this.x = x;
+    this.y = y;
     this.r = cellSize / 2;
     this.color = theColor;
   }
