@@ -4,7 +4,6 @@
 
 let checkerboard;
 let cellSize;
-const GRID_SIZE = 8;
 const WHITE_TILE = 0;
 const GRAY_TILE = 1;
 let isWhite = true;
@@ -18,7 +17,10 @@ let activePiece;
 let redCheckers = [];
 let blackCheckers = [];
 
-let startBoard = [ 
+let boardFile;
+let startBoard;
+
+/* let startBoard = [ 
   [0, "r", 0, "r", 0, "r", 0, "r"],
   ["r", 0, "r", 0, "r", 0, "r", 0],
   [0, "r", 0, "r", 0, "r", 0, "r"],
@@ -27,7 +29,7 @@ let startBoard = [
   ["b", 0, "b", 0, "b", 0, "b", 0],
   [0, "b", 0, "b", 0, "b", 0, "b"],
   ["b", 0, "b", 0, "b", 0, "b", 0],
-];
+]; */
 
 // to do:
 // DEBUG!!! + place checkers pieces on grid (priority nov 4. figure out how to place in correct position)
@@ -38,9 +40,10 @@ let startBoard = [
 // display the count of piece for each player
 // display the winner at the end of the game
 
-// function preload() {
-//  boardFile = loadStrings("board.txt");
-//}
+function preload() {
+  boardFile = "board.txt";
+  rows = loadStrings(boardFile);
+}
 
 function setup() {
   if (windowWidth < windowHeight) {
@@ -49,33 +52,26 @@ function setup() {
   else if (windowHeight < windowWidth) {
     createCanvas(windowHeight, windowHeight);
   }
-  cellSize = height / GRID_SIZE;
-  checkerboard = generateCheckerboard(GRID_SIZE, GRID_SIZE);
 
-  // create checkers pieces
-  let theColor = "red";
-  for (let y = 0; y < startBoard.length; y++) {
-    for (let x = 0; x < startBoard.length; x++) {
-      if (startBoard[y][x] === "r") {
-        redCheckers.push(new Checkers(theColor, y, x));
-      }
+  squaresHigh = rows.length;
+  squaresWide = rows[0].length;
+
+  cellSize = height / squaresWide;
+  checkerboard = generateCheckerboard(squaresWide, squaresHigh);
+  pieces = createEmpty2dArray(squaresWide, squaresHigh);
+
+  // convert string into 2D array
+  for (let y = 0; y < squaresHigh; y++) {
+    for (let x = 0; x < squaresWide; x++) {
+      let pieceType = rows[y][x];
+      pieces[y][x] = pieceType;
     }
   }
-
-  theColor = "black";
-  for (let y = 0; y < startBoard.length; y++) {
-    for (let x = 0; x < startBoard.length; x++) {
-      if (startBoard[y][x] === "b") {
-        blackCheckers.push(new Checkers(theColor, y, x));
-      }
-    }
-  }
-
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  cellSize = height / GRID_SIZE;
+  cellSize = height / squaresHigh;
 }
 
 function draw() {
@@ -88,9 +84,25 @@ function draw() {
 
 }
 
+function showPieces(location, x, y) {
+  if (location === "r") {
+    let theColor = "red";
+    redCheckers.push(new Checkers(theColor, x, y));
+  }
+  else if (location === "b") {
+    let theColor = "black";
+    blackCheckers.push(new Checkers(theColor, x, y));
+  }
+
+  // create checkers pieces
+
+
+}
+
+
 function displayCheckerboard() {
-  for (let y = 0; y < GRID_SIZE; y++) {
-    for (let x = 0; x < GRID_SIZE; x++) {
+  for (let y = 0; y < squaresHigh; y++) {
+    for (let x = 0; x < squaresWide; x++) {
       if (checkerboard[y][x] === WHITE_TILE) {
         fill("white");
       } 
@@ -127,6 +139,17 @@ function generateCheckerboard(cols, rows) {
   return newBoard;
 }
 
+function createEmpty2dArray(cols, rows) {
+  let piecesBoard = [];
+  for (let y = 0; y < rows; y++) {
+    piecesBoard.push([]);
+    for (let x = 0; x < cols; x++) {
+      piecesBoard[y].push(0);
+    }
+  }
+  return piecesBoard;
+}
+
 class Checkers {
   constructor(theColor, x, y) {
     this.x = x;
@@ -136,13 +159,8 @@ class Checkers {
   }
 
   display() {
-    if (this.color === "red") {
-      fill("red");
-    }
-    if (this.color === "black") {
-      fill("black");
-    }
-    circle(this.x + this.r, this.y + this.r, 2 * this.r - offset);
+    fill(this.color);
+    circle(this.x * cellSize + this.r, this.y + this.r, 2 * this.r - offset);
   }
 
 }
