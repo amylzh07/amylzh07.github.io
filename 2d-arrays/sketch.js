@@ -1,6 +1,6 @@
 // AI Checkers
 // Amy (Lening) Zhang
-// Nov 6, 2024
+// Nov 12, 2024
 
 let checkerboard;
 let cellSize;
@@ -20,19 +20,15 @@ let blackCheckers = [];
 let boardFile;
 let startBoard;
 
-/* let startBoard = [ 
-  [0, "r", 0, "r", 0, "r", 0, "r"],
-  ["r", 0, "r", 0, "r", 0, "r", 0],
-  [0, "r", 0, "r", 0, "r", 0, "r"],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  ["b", 0, "b", 0, "b", 0, "b", 0],
-  [0, "b", 0, "b", 0, "b", 0, "b"],
-  ["b", 0, "b", 0, "b", 0, "b", 0],
-]; */
-
 // to do:
-// DEBUG!!! + place checkers pieces on grid (priority nov 4. figure out how to place in correct position)
+
+// array #1 checkerboard -- DONE
+// array #2 checkers pieces displayed as objects in a class
+// iterate through the string and set object positions (in an array) based on what the string's position is
+// --> this can be done in the setup
+// implement turn-based system when moving on click
+
+
 // move piece diagonally
 // capture opponent's piece
 // implement turn by turn
@@ -60,7 +56,18 @@ function setup() {
   checkerboard = generateCheckerboard(squaresWide, squaresHigh);
   pieces = createEmpty2dArray(squaresWide, squaresHigh);
 
-  // convert string into 2D array
+  // create checkers
+  for (let i = 0; i < 12; i++) {
+    let theColor = "red";
+    redCheckers.push(new Checkers(theColor));
+  }
+
+  for (let i = 0; i < 12; i++) {
+    let theColor = "black";
+    blackCheckers.push(new Checkers(theColor));
+  }
+
+  // convert position string into 2D array
   for (let y = 0; y < squaresHigh; y++) {
     for (let x = 0; x < squaresWide; x++) {
       let pieceType = rows[y][x];
@@ -78,46 +85,31 @@ function draw() {
   background(220);
   displayCheckerboard();
 
-  for (let redChecker of redCheckers) {
-    redChecker.display();
-  }
-
-}
-
-function showPieces(location, x, y) {
-  if (location === "r") {
-    let theColor = "red";
-    redCheckers.push(new Checkers(theColor, x, y));
-  }
-  else if (location === "b") {
-    let theColor = "black";
-    blackCheckers.push(new Checkers(theColor, x, y));
-  }
-
-  // create checkers pieces
-
-
-}
-
-
-function displayCheckerboard() {
   for (let y = 0; y < squaresHigh; y++) {
     for (let x = 0; x < squaresWide; x++) {
-      if (checkerboard[y][x] === WHITE_TILE) {
-        fill("white");
-      } 
-      else if (checkerboard[y][x] === GRAY_TILE) {
-        fill("gray");
-      }
-      noStroke();
-      square(x * cellSize, y * cellSize, cellSize);
+      showPieces(pieces[y][x], x, y);
     }
   }
 }
 
-function mousePressed() {
-  let x = Math.floor(mouseX/cellSize);
-  let y = Math.floor(mouseY/cellSize);
+function createEmpty2dArray(cols, rows) {
+  let piecesBoard = [];
+  for (let y = 0; y < rows; y++) {
+    piecesBoard.push([]);
+    for (let x = 0; x < cols; x++) {
+      piecesBoard[y].push(0);
+    }
+  }
+  return piecesBoard;
+}
+
+function displayCheckers(location, x, y) {
+  if (location === "r") {
+    redCheckers.display();
+  }
+  else if (location === "b") {
+    blackCheckers.display();
+  }
 }
 
 function generateCheckerboard(cols, rows) {
@@ -139,15 +131,27 @@ function generateCheckerboard(cols, rows) {
   return newBoard;
 }
 
-function createEmpty2dArray(cols, rows) {
-  let piecesBoard = [];
-  for (let y = 0; y < rows; y++) {
-    piecesBoard.push([]);
-    for (let x = 0; x < cols; x++) {
-      piecesBoard[y].push(0);
+function displayCheckerboard() {
+  for (let y = 0; y < squaresHigh; y++) {
+    for (let x = 0; x < squaresWide; x++) {
+      if (checkerboard[y][x] === WHITE_TILE) {
+        fill("white");
+      } 
+      else if (checkerboard[y][x] === GRAY_TILE) {
+        fill("gray");
+      }
+      noStroke();
+      square(x * cellSize, y * cellSize, cellSize);
     }
   }
-  return piecesBoard;
+}
+
+function mousePressed() {
+  let x = Math.floor(mouseX/cellSize);
+  let y = Math.floor(mouseY/cellSize);
+
+  // send position data back to whichever checker clicked
+
 }
 
 class Checkers {
@@ -163,8 +167,13 @@ class Checkers {
     circle(this.x * cellSize + this.r, this.y + this.r, 2 * this.r - offset);
   }
 
-}
-
-function moveCheckers() {
+  move() {}
 
 }
+
+
+// currently we iterate through the string of positions to set where the checkers show up
+// then the checkers are created by creating new objects and pushing to an array
+// 
+
+// refer to chess-maybe for help
