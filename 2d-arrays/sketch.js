@@ -8,7 +8,8 @@ const WHITE_TILE = 0;
 const GRAY_TILE = 1;
 let isWhite = true;
 
-let offset = 14;
+let canvasOffset = 50;
+let pieceOffset = 14;
 
 let turns = ["r", "b"]; // hold turns
 
@@ -43,10 +44,10 @@ function preload() {
 
 function setup() {
   if (windowWidth < windowHeight) {
-    createCanvas(windowWidth, windowWidth);
+    createCanvas(windowWidth - canvasOffset, windowWidth - canvasOffset);
   }
   else if (windowHeight < windowWidth) {
-    createCanvas(windowHeight, windowHeight);
+    createCanvas(windowHeight - canvasOffset, windowHeight - canvasOffset);
   }
 
   squaresHigh = rows.length;
@@ -56,22 +57,23 @@ function setup() {
   checkerboard = generateCheckerboard(squaresWide, squaresHigh);
   pieces = createEmpty2dArray(squaresWide, squaresHigh);
 
-  // create checkers
-  for (let i = 0; i < 12; i++) {
-    let theColor = "red";
-    redCheckers.push(new Checkers(theColor));
-  }
-
-  for (let i = 0; i < 12; i++) {
-    let theColor = "black";
-    blackCheckers.push(new Checkers(theColor));
-  }
-
   // convert position string into 2D array
   for (let y = 0; y < squaresHigh; y++) {
     for (let x = 0; x < squaresWide; x++) {
       let pieceType = rows[y][x];
       pieces[y][x] = pieceType;
+    }
+  }
+
+  // create checkers based on positions
+  for (let y = 0; y < squaresHigh; y++) {
+    for (let x = 0; x < squaresWide; x++) {
+      if (pieces[y][x] === "r") {
+        redCheckers.push(new Checkers("red", x, y));
+      }
+      else if (pieces[y][x] === "b") {
+        blackCheckers.push(new Checkers("black", x, y));
+      }
     }
   }
 }
@@ -84,12 +86,18 @@ function windowResized() {
 function draw() {
   background(220);
   displayCheckerboard();
+  displayCheckers();
 
-  for (let y = 0; y < squaresHigh; y++) {
-    for (let x = 0; x < squaresWide; x++) {
-      showPieces(pieces[y][x], x, y);
-    }
+}
+
+function displayCheckers() {
+  for (let redChecker of redCheckers) {
+    redChecker.display();
   }
+  for (let blackChecker of blackCheckers) {
+    blackChecker.display();
+  }
+
 }
 
 function createEmpty2dArray(cols, rows) {
@@ -101,15 +109,6 @@ function createEmpty2dArray(cols, rows) {
     }
   }
   return piecesBoard;
-}
-
-function displayCheckers(location, x, y) {
-  if (location === "r") {
-    redCheckers.display();
-  }
-  else if (location === "b") {
-    blackCheckers.display();
-  }
 }
 
 function generateCheckerboard(cols, rows) {
@@ -164,7 +163,7 @@ class Checkers {
 
   display() {
     fill(this.color);
-    circle(this.x * cellSize + this.r, this.y + this.r, 2 * this.r - offset);
+    circle(this.x * cellSize + this.r, this.y + this.r, 2 * this.r - pieceOffset);
   }
 
   move() {}
