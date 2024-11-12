@@ -145,13 +145,8 @@ function mousePressed() {
 }
 
 function pieceClicked(x, y) {
-
-}
-
-function highlightMoves() {
-  // fill with green color
   fill(0, 255, 0, 100);
-
+  rect(x, y, cellsize);
 
 }
 
