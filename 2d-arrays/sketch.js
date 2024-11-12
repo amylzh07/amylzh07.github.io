@@ -11,9 +11,7 @@ let isWhite = true;
 let canvasOffset = 50;
 let pieceOffset = 14;
 
-let turns = ["r", "b"]; // hold turns
-
-let activePiece;
+let turn = 1;
 
 let redCheckers = [];
 let blackCheckers = [];
@@ -21,18 +19,9 @@ let blackCheckers = [];
 let boardFile;
 let startBoard;
 
-// to do:
-
-// array #1 checkerboard -- DONE
-// array #2 checkers pieces displayed as objects in a class
-// iterate through the string and set object positions (in an array) based on what the string's position is
-// --> this can be done in the setup
 // implement turn-based system when moving on click
-
-
 // move piece diagonally
-// capture opponent's piece
-// implement turn by turn
+// jump and capture opponent's piece
 // determine AI move system
 // display the count of piece for each player
 // display the winner at the end of the game
@@ -149,7 +138,20 @@ function mousePressed() {
   let x = Math.floor(mouseX/cellSize);
   let y = Math.floor(mouseY/cellSize);
 
+  for (let red of redCheckers) {}
   // send position data back to whichever checker clicked
+  
+
+}
+
+function pieceClicked(x, y) {
+
+}
+
+function highlightMoves() {
+  // fill with green color
+  fill(0, 255, 0, 100);
+
 
 }
 
@@ -163,16 +165,11 @@ class Checkers {
 
   display() {
     fill(this.color);
-    circle(this.x * cellSize + this.r, this.y + this.r, 2 * this.r - pieceOffset);
+    circle(this.x * cellSize + this.r, this.y * cellSize + this.r, 2 * this.r - pieceOffset);
   }
 
-  move() {}
+  possibleMoves() {
+
+  }
 
 }
-
-
-// currently we iterate through the string of positions to set where the checkers show up
-// then the checkers are created by creating new objects and pushing to an array
-// 
-
-// refer to chess-maybe for help
