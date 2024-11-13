@@ -13,6 +13,7 @@
 - [Game of Life](game-of-life)
 - [Rectangular Grid](rect-grid)
 - [Character in a Grid](character-grid)
+- [Walker](walker-demo)
 
 ## Projects
 - [Interactive Scene](interactive-scene)

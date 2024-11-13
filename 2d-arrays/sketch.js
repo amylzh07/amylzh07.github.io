@@ -11,7 +11,7 @@ let isWhite = true;
 let canvasOffset = 50;
 let pieceOffset = 14;
 
-let turn = 1;
+let turn = 1; // positive red negative blue
 
 let redCheckers = [];
 let blackCheckers = [];
