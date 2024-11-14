@@ -81,7 +81,6 @@ function draw() {
   background(220);
   displayCheckerboard();
   displayCheckers();
-
 }
 
 function displayCheckers() {
@@ -133,37 +132,67 @@ function displayCheckerboard() {
       else if (checkerboard[y][x] === GRAY_TILE) {
         fill("gray");
       }
-      else if (checkerboard[y][x] === SELECTED_TILE) {
-        fill(0, 255, 0, 100);
+      
+      for (let move of possibleMoves) {
+        if (move.x === x && move.y === y) {
+          fill(0, 255, 0, 100);
+        }
       }
+
       noStroke();
       square(x * cellSize, y * cellSize, cellSize);
     }
   }
 }
 
+function isValidMove(x, y) {
+  for (let move of possibleMoves) {
+    if (x === move.x && y === move.y) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function mousePressed() {
   let x = Math.floor(mouseX / cellSize);
   let y = Math.floor(mouseY / cellSize);
 
-  // pieceSelected && pieces[y][x] === "."
-  if (pieces[y][x] === "r") {
+  if (x < 0 || x >= squaresWide || y < 0 || y >= squaresHigh) return;
+
+  // select piece
+  if (pieces[y][x] === "r" && !pieceSelected) {
+    possibleMoves = [];
+
     for (let red of redCheckers) {
-      if (x >= red.x * cellSize && x <= red.x * cellSize + cellSize &&
-        y >= red.y && y <= red.y + cellSize)  {
+      if (red.x === x && red.y === y)  {
+        // delete prior selection
+        if (pieceSelected) {
+          checkerboard[selectedPiece.y][selectedPiece.x] = prevColor;
+        }
+
+        // select new piece
         pieceSelected = true;
         selectedPiece = red;
+
+        prevColor = checkerboard[selectedPiece.y][selectedPiece.x];
+        checkerboard[selectedPiece.y][selectedPiece.x] = SELECTED_TILE; // highlight selected piece
+        // check possible moves
+        possibleMoves = selectedPiece.checkMoves(selectedPiece.x, selectedPiece.y);
         break;
       }
     }
   }
-  else if (pieces[y][x] === "." && selectedPiece) {
-    for (let move of possibleMoves) {
-      if (pieces[y][x] === move) {
-        prevColor = checkerboard[y][x];
-        checkerboard[y][x] = SELECTED_TILE; 
-      }
-    }
+  // select tile for movement
+  else if (pieces[y][x] === "." && pieceSelected && isValidMove(x, y)) {
+    selectedPiece.moveChecker(x, y);
+    checkerboard[selectedPiece.y][selectedPiece.x] = prevColor;
+
+    // reset for next round
+    pieceSelected = false;
+    currentPlayer = -currentPlayer;
+    possibleMoves = [];
+    selectedPiece = null;
   }    
 }
 
@@ -179,35 +208,78 @@ class Checkers {
     fill(this.color);
     circle(this.x * cellSize + this.r, this.y * cellSize + this.r, 2 * this.r - pieceOffset);
     if (pieceSelected && selectedPiece) {
-      prevColor = checkerboard[y][x];
-      checkerboard[y][x] = SELECTED_TILE; 
+      prevColor = checkerboard[this.y][this.x];
+      checkerboard[this.y][this.x] = SELECTED_TILE; 
     }
   }
 
   checkMoves(x, y) {
-    pieces[y][x];
-    if (pieces[y - 1][x + 1] === ".") {
-      possibleMoves.push(pieces[y - 1][x + 1]);
+    possibleMoves = [];
+
+    if (y - 1 >= 0 && x + 1 < squaresWide && pieces[y - 1][x + 1] === ".") {
+      possibleMoves.push({y: y - 1, x: x + 1});
     }
-    if (pieces[y - 1][x - 1] === ".") {
-      possibleMoves.push(pieces[y - 1][x - 1]);
+    if (y - 1 >= 0 && x - 1 >= 0 && pieces[y - 1][x - 1] === ".") {
+      possibleMoves.push({y: y - 1, x: x - 1});
     }
     return possibleMoves;
   }
 
-  moveChecker() {
-    
-    // if the player clicks on a spot that is a valid move, then redraw the checker on that spot
-    // keep track in the array
-    // clear old spot
-    // set new spot
-    pieceSelected = false;
-    selectedPiece = null;
-    currentPlayer = -currentPlayer;
+  moveChecker(x, y) {
+    if (!pieceSelected) return;
+
+    pieces[selectedPiece.y][selectedPiece.x] = ".";
+    pieces[y][x] = selectedPiece.color[0]; // redraw checker in new spot
+
+    let prevPosX = selectedPiece.x;
+    let prevPosY = selectedPiece.y;
+
+    selectedPiece.x = x;
+    selectedPiece.y = y;
+
+    checkerboard[prevPosY][prevPosX] = prevColor;
+    checkerboard[y][x] = SELECTED_TILE; // highlight the new position
   }
 }
 
+function minimax(board, depth, isMaximizingPlayer) {
+  if (depth === 0 || isGameOver(board)) {
+    return evaluateBoard(board);
+  }
 
-// 2. implement ai:
-// red is player, black is AI
-// minimax through ai.js or just on the main sketch.js
+  if (isMaximizingPlayer) {
+    let maxEval = -Infinity;
+    let moves = getAllPossibleMoves(board, "black");
+    for (let move of moves) {
+      let newBoard = makeMove(board, move);
+      let eval = minimax(newBoard, depth - 1, false);
+      maxEval = Math.max(maxEval, eval);
+    }
+    return maxEval;
+  } else {
+    let minEval = Infinity;
+    let moves = getAllPossibleMoves(board, "red");
+    for (let move of moves) {
+      let newBoard = makeMove(board, move);
+      let eval = minimax(newBoard, depth - 1, true);
+      minEval = Math.min(minEval, eval);
+    }
+    return minEval;
+  }
+}
+
+function evaluateBoard(board) {
+
+}
+
+function isGameOver(board) {
+
+}
+
+function getAllPossibleMoves(board, player) {
+
+}
+
+function makeMove(board, move) {
+
+}
