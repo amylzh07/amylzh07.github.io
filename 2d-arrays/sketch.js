@@ -19,12 +19,8 @@ let blackCheckers = [];
 let boardFile;
 let startBoard;
 
-// implement turn-based system when moving on click
-// move piece diagonally
-// jump and capture opponent's piece
-// determine AI move system
-// display the count of piece for each player
-// display the winner at the end of the game
+let pieceSelected = false;
+let selectedPiece = null;
 
 function preload() {
   boardFile = "board.txt";
@@ -134,19 +130,19 @@ function displayCheckerboard() {
   }
 }
 
-function mousePressed() {
+function mouseClicked() {
   let x = Math.floor(mouseX/cellSize);
   let y = Math.floor(mouseY/cellSize);
 
-  for (let red of redCheckers) {}
-  // send position data back to whichever checker clicked
-  
+  for (let red of redCheckers) {
+    if (x >= red.x && x <= red.x + cellSize &&
+      y >= red.y && y <= red.y + cellSize)  {
+        pieceSelected = true;
+        selectedPiece = red;
+        // how to exit a for loop? ask mr schellenberg
 
-}
-
-function pieceClicked(x, y) {
-  fill(0, 255, 0, 100);
-  rect(x, y, cellsize);
+    }
+  }  
 
 }
 
@@ -161,10 +157,36 @@ class Checkers {
   display() {
     fill(this.color);
     circle(this.x * cellSize + this.r, this.y * cellSize + this.r, 2 * this.r - pieceOffset);
+    if (pieceSelected && selectedPiece) {
+      fill(0, 255, 0, 100);
+      circle(selectedPiece.x, selectedPiece.y, 4 * this.r - 2 * pieceOffset);
+    }
   }
 
-  possibleMoves() {
+  checkMoves(x, y) {
+    // create possibleMoves array
+    // push moves IF VALID
+    // use if statement to find whether within bounds from x, y of the piece's position
+    // then return possibleMoves
 
+  }
+
+  moveChecker() {
+    // if the player clicks on a spot that is a valid move, then redraw the checker on that spot
+    // do we want to redraw or should i just... translate the checker. 
+    // i think we should redraw because then i can keep track in the array
+    // clear old spot
+    // set new spot
+    pieceSelected = false;
+    selectedPiece = null;
   }
 
 }
+
+
+// 2. implement ai:
+// red is player, black is AI
+// minimax through ai.js or just on the main sketch.js
+
+// online resources: https://github.com/rcrym/Checkers_AI
+// https://github.com/kev-cao/checkers-ai 
