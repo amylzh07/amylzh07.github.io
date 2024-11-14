@@ -36,19 +36,23 @@ class Walker {
   }
 }
 
-let amy;
-let joti;
+let walkers = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  amy = new Walker(width / 2, height / 2, "pink");
-  joti = new Walker(200, 300, "blue");
+  let newWalker = new Walker(width / 2, height / 2, "pink");
+  walkers.push(newWalker);
 }
 
 function draw() {
-  amy.move();
-  joti.move();
+  for (let walker of walkers) {
+    walker.move();
+    walker.display();
+  }
+}
 
-  amy.display();
-  joti.display();
+function mousePressed() {
+  let randomColor = color(random(255), random(255), random(255));
+  let someWalker = new Walker(mouseX, mouseY, randomColor);
+  walkers.push(someWalker);
 }

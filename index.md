@@ -13,7 +13,8 @@
 - [Game of Life](game-of-life)
 - [Rectangular Grid](rect-grid)
 - [Character in a Grid](character-grid)
-- [Walker](walker-demo)
+- [Walker-OOP](walker-OOP)
+= [Walker-OOP-Array](walker-OOP-array)
 
 ## Projects
 - [Interactive Scene](interactive-scene)
