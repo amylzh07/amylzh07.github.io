@@ -2,17 +2,23 @@
 // Amy (Lening) Zhang
 // Nov 12, 2024
 
+// extras for experts:
+// - combined classes with 2d arrays based on positions
+// - implemented minimax function to determine best possible move (as a sort of AI)
+
 let checkerboard;
 let pieces;
 let cellSize;
 const WHITE_TILE = 0;
 const GRAY_TILE = 1;
+const SELECTED_TILE = 2;
 let isWhite = true;
+let prevColor = null;
 
 let canvasOffset = 50;
 let pieceOffset = 14;
 
-let turn = 1; // positive red negative blue
+let currentPlayer = 1;
 
 let redCheckers = [];
 let blackCheckers = [];
@@ -127,24 +133,38 @@ function displayCheckerboard() {
       else if (checkerboard[y][x] === GRAY_TILE) {
         fill("gray");
       }
+      else if (checkerboard[y][x] === SELECTED_TILE) {
+        fill(0, 255, 0, 100);
+      }
       noStroke();
       square(x * cellSize, y * cellSize, cellSize);
     }
   }
 }
 
-function mouseClicked() {
-  let x = Math.floor(mouseX/cellSize);
-  let y = Math.floor(mouseY/cellSize);
+function mousePressed() {
+  let x = Math.floor(mouseX / cellSize);
+  let y = Math.floor(mouseY / cellSize);
 
-  for (let red of redCheckers) {
-    if (x >= red.x && x <= red.x + cellSize &&
-      y >= red.y && y <= red.y + cellSize)  {
-      pieceSelected = true;
-      selectedPiece = red;
-      break;
+  // pieceSelected && pieces[y][x] === "."
+  if (pieces[y][x] === "r") {
+    for (let red of redCheckers) {
+      if (x >= red.x * cellSize && x <= red.x * cellSize + cellSize &&
+        y >= red.y && y <= red.y + cellSize)  {
+        pieceSelected = true;
+        selectedPiece = red;
+        break;
+      }
     }
-  }  
+  }
+  else if (pieces[y][x] === "." && selectedPiece) {
+    for (let move of possibleMoves) {
+      if (pieces[y][x] === move) {
+        prevColor = checkerboard[y][x];
+        checkerboard[y][x] = SELECTED_TILE; 
+      }
+    }
+  }    
 }
 
 class Checkers {
@@ -159,36 +179,35 @@ class Checkers {
     fill(this.color);
     circle(this.x * cellSize + this.r, this.y * cellSize + this.r, 2 * this.r - pieceOffset);
     if (pieceSelected && selectedPiece) {
-      fill(0, 255, 0, 100);
-      circle(selectedPiece.x, selectedPiece.y, 4 * this.r - 2 * pieceOffset);
+      prevColor = checkerboard[y][x];
+      checkerboard[y][x] = SELECTED_TILE; 
     }
   }
 
   checkMoves(x, y) {
     pieces[y][x];
-    // push moves IF VALID
-    // check grids based off of game of life
-    // use if statement to find whether within bounds from x, y of the piece's position
-    // then return possibleMoves
-
+    if (pieces[y - 1][x + 1] === ".") {
+      possibleMoves.push(pieces[y - 1][x + 1]);
+    }
+    if (pieces[y - 1][x - 1] === ".") {
+      possibleMoves.push(pieces[y - 1][x - 1]);
+    }
+    return possibleMoves;
   }
 
   moveChecker() {
+    
     // if the player clicks on a spot that is a valid move, then redraw the checker on that spot
-    // do we want to redraw or should i just... translate the checker. 
     // keep track in the array
     // clear old spot
     // set new spot
     pieceSelected = false;
     selectedPiece = null;
+    currentPlayer = -currentPlayer;
   }
-
 }
 
 
 // 2. implement ai:
 // red is player, black is AI
 // minimax through ai.js or just on the main sketch.js
-
-// online resources: https://github.com/rcrym/Checkers_AI
-// https://github.com/kev-cao/checkers-ai 
