@@ -3,6 +3,7 @@
 // Nov 12, 2024
 
 let checkerboard;
+let pieces;
 let cellSize;
 const WHITE_TILE = 0;
 const GRAY_TILE = 1;
@@ -21,6 +22,8 @@ let startBoard;
 
 let pieceSelected = false;
 let selectedPiece = null;
+
+let possibleMoves = [];
 
 function preload() {
   boardFile = "board.txt";
@@ -139,11 +142,9 @@ function mouseClicked() {
       y >= red.y && y <= red.y + cellSize)  {
         pieceSelected = true;
         selectedPiece = red;
-        // how to exit a for loop? ask mr schellenberg
-
+        break;
     }
   }  
-
 }
 
 class Checkers {
@@ -164,8 +165,9 @@ class Checkers {
   }
 
   checkMoves(x, y) {
-    // create possibleMoves array
+    pieces[y][x];
     // push moves IF VALID
+    // check grids based off of game of life
     // use if statement to find whether within bounds from x, y of the piece's position
     // then return possibleMoves
 
@@ -174,7 +176,7 @@ class Checkers {
   moveChecker() {
     // if the player clicks on a spot that is a valid move, then redraw the checker on that spot
     // do we want to redraw or should i just... translate the checker. 
-    // i think we should redraw because then i can keep track in the array
+    // keep track in the array
     // clear old spot
     // set new spot
     pieceSelected = false;
