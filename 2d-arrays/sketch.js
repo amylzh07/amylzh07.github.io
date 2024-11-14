@@ -140,9 +140,9 @@ function mouseClicked() {
   for (let red of redCheckers) {
     if (x >= red.x && x <= red.x + cellSize &&
       y >= red.y && y <= red.y + cellSize)  {
-        pieceSelected = true;
-        selectedPiece = red;
-        break;
+      pieceSelected = true;
+      selectedPiece = red;
+      break;
     }
   }  
 }
