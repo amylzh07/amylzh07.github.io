@@ -1,10 +1,14 @@
-// AI Checkers
+// Checkers-ish
 // Amy (Lening) Zhang
-// Nov 12, 2024
+// Nov 15, 2024
 
 // extras for experts:
-// - combined classes with 2d arrays based on positions
-// - implemented minimax function to determine best possible move (as a sort of AI)
+// - used both classes(OOP) and object literals with different purposes in addition to two 2d arrays
+//    --> classes were used to create checkers objects, while object literals were used to store the x and y coordinate data of a checker's possible moves
+//    --> one 2d array held the board, while the other held the positions and was updated throughout gameplay
+
+// NOTE: the current version (as of 10:27pm Nov. 14) does NOT allow for successful jumping
+// --> as i ran out of time, i will debug later but am submitting this version for now as it meets the rubric's criteria
 
 let checkerboard;
 let pieces;
@@ -15,7 +19,6 @@ const SELECTED_TILE = 2;
 let isWhite = true;
 let prevColor = null;
 
-let canvasOffset = 50;
 let pieceOffset = 14;
 
 let currentPlayer = 1;
@@ -26,8 +29,9 @@ let blackCheckers = [];
 let boardFile;
 let startBoard;
 
-let pieceSelected = false;
+let activeChecker = false;
 let selectedPiece = null;
+let donePicking = false;
 
 let possibleMoves = [];
 
@@ -38,10 +42,10 @@ function preload() {
 
 function setup() {
   if (windowWidth < windowHeight) {
-    createCanvas(windowWidth - canvasOffset, windowWidth - canvasOffset);
+    createCanvas(0.75 * windowWidth, 0.75 * windowWidth);
   }
   else if (windowHeight < windowWidth) {
-    createCanvas(windowHeight - canvasOffset, windowHeight - canvasOffset);
+    createCanvas(0.75 * windowHeight, 0.75 * windowHeight);
   }
 
   squaresHigh = rows.length;
@@ -132,7 +136,10 @@ function displayCheckerboard() {
       else if (checkerboard[y][x] === GRAY_TILE) {
         fill("gray");
       }
-      
+      else if (checkerboard[y][x] === SELECTED_TILE) {
+        fill(0, 255, 0, 100);
+      }
+
       for (let move of possibleMoves) {
         if (move.x === x && move.y === y) {
           fill(0, 255, 0, 100);
@@ -154,46 +161,71 @@ function isValidMove(x, y) {
   return false;
 }
 
+function cancelMove() {
+  if (activeChecker) {
+    checkerboard[selectedPiece.y][selectedPiece.x] = prevColor;
+    activeChecker = false;  
+    selectedPiece = null;  
+  }
+}
+
 function mousePressed() {
   let x = Math.floor(mouseX / cellSize);
   let y = Math.floor(mouseY / cellSize);
+  prevColor = checkerboard[y][x];
 
-  if (x < 0 || x >= squaresWide || y < 0 || y >= squaresHigh) return;
+  // select tile for movement
+  if (pieces[y][x] === "." && activeChecker && isValidMove(x, y)) {
+    selectedPiece.moveChecker(x, y);
+    checkerboard[selectedPiece.y][selectedPiece.x] = prevColor;
 
-  // select piece
-  if (pieces[y][x] === "r" && !pieceSelected) {
+    // reset for next round
+    activeChecker = false;
+    currentPlayer = -currentPlayer;
     possibleMoves = [];
+    selectedPiece = null;
+  }
 
-    for (let red of redCheckers) {
-      if (red.x === x && red.y === y)  {
-        // delete prior selection
-        if (pieceSelected) {
-          checkerboard[selectedPiece.y][selectedPiece.x] = prevColor;
-        }
+  // select black piece
+  else if (currentPlayer === -1 && pieces[y][x] === "b" && !activeChecker) {
+    possibleMoves = [];
+    console.log(`Is the checker active? ${activeChecker}`);
+    for (let black of blackCheckers) {
+      if (black.x === x && black.y === y)  {
+        // find selected piece
+        activeChecker = true;
+        selectedPiece = black;
 
-        // select new piece
-        pieceSelected = true;
-        selectedPiece = red;
+        checkerboard[y][x] = SELECTED_TILE;
 
-        prevColor = checkerboard[selectedPiece.y][selectedPiece.x];
-        checkerboard[selectedPiece.y][selectedPiece.x] = SELECTED_TILE; // highlight selected piece
         // check possible moves
         possibleMoves = selectedPiece.checkMoves(selectedPiece.x, selectedPiece.y);
         break;
       }
     }
   }
-  // select tile for movement
-  else if (pieces[y][x] === "." && pieceSelected && isValidMove(x, y)) {
-    selectedPiece.moveChecker(x, y);
-    checkerboard[selectedPiece.y][selectedPiece.x] = prevColor;
 
-    // reset for next round
-    pieceSelected = false;
-    currentPlayer = -currentPlayer;
+  // select red piece
+  else if (currentPlayer === 1 && pieces[y][x] === "r" && !activeChecker) {
     possibleMoves = [];
-    selectedPiece = null;
-  }    
+
+    for (let red of redCheckers) {
+      if (red.x === x && red.y === y)  {
+        // find selected piece
+        activeChecker = true;
+        selectedPiece = red;
+
+        checkerboard[y][x] = SELECTED_TILE;
+
+        // check possible moves
+        possibleMoves = selectedPiece.checkMoves(selectedPiece.x, selectedPiece.y);
+        break;
+      }
+    }
+  }
+  else {
+    cancelMove();
+  }
 }
 
 class Checkers {
@@ -207,27 +239,86 @@ class Checkers {
   display() {
     fill(this.color);
     circle(this.x * cellSize + this.r, this.y * cellSize + this.r, 2 * this.r - pieceOffset);
-    if (pieceSelected && selectedPiece) {
-      prevColor = checkerboard[this.y][this.x];
-      checkerboard[this.y][this.x] = SELECTED_TILE; 
-    }
   }
 
   checkMoves(x, y) {
     possibleMoves = [];
 
-    if (y - 1 >= 0 && x + 1 < squaresWide && pieces[y - 1][x + 1] === ".") {
-      possibleMoves.push({y: y - 1, x: x + 1});
+    if (this.color === "red") {
+      //diagonal movement
+      if (y - 1 >= 0 && x + 1 < squaresWide && pieces[y - 1][x + 1] === ".") {
+        possibleMoves.push({y: y - 1, x: x + 1});
+      }
+      if (y - 1 >= 0 && x - 1 >= 0 && pieces[y - 1][x - 1] === ".") {
+        possibleMoves.push({y: y - 1, x: x - 1});
+      }
+
+      // jump movement
+      if (y - 2 >= 0 && x + 2 < squaresWide && pieces[y - 1][x + 1] === "b" && pieces[y - 2][x + 2] === ".") {
+        possibleMoves.push({y: y - 2, x: x + 2});
+      }
+      if (y - 2 >= 0 && x - 2 >= 0 && pieces[y - 1][x - 1] === "b" && pieces[y - 2][x - 2] === ".") {
+        possibleMoves.push({y: y - 2, x: x - 2});
+      }
+
+      return possibleMoves;
     }
-    if (y - 1 >= 0 && x - 1 >= 0 && pieces[y - 1][x - 1] === ".") {
-      possibleMoves.push({y: y - 1, x: x - 1});
+
+    else if (this.color === "black") {
+      //diagonal movement
+      if (y + 1 < squaresHigh && x + 1 < squaresWide && pieces[y + 1][x + 1] === ".") {
+        possibleMoves.push({y: y + 1, x: x + 1});
+      }
+      if (y + 1 < squaresHigh && x - 1 >= 0 && pieces[y + 1][x - 1] === ".") {
+        possibleMoves.push({y: y + 1, x: x - 1});
+      }
+
+      // jump movement
+      if (y + 2 <= 6 && x + 2 < squaresWide && pieces[y + 1][x + 1] === "r" && pieces[y + 2][x + 2] === ".") {
+        possibleMoves.push({y: y + 2, x: x + 2});
+      }
+      if (y + 2 <= 6 && x - 2 >= 0 && pieces[y + 1][x - 1] === "r" && pieces[y + 2][x - 2] === ".") {
+        possibleMoves.push({y: y + 2, x: x - 2});
+      }
+      return possibleMoves;
     }
-    return possibleMoves;
   }
 
   moveChecker(x, y) {
-    if (!pieceSelected) return;
+    if (!activeChecker) return;
 
+    //NOTE: jumping is currently buggy (11/14/2024)
+
+    // check for jumping
+    let dX = Math.abs(x - selectedPiece.x);
+    let dY = Math.abs(y - selectedPiece.y);
+    
+    if (dX === 2 && dY === 2) {
+      // find middle checker
+      let midX = (x + selectedPiece.x) / 2;
+      let midY = (y + selectedPiece.x) / 2;
+
+      if (activeChecker.color === "red") {
+        // remove black checker
+        for (let i = 0; i < blackCheckers.length; i++) {
+          if (blackCheckers[i].x === midX && blackCheckers[i].y === midY) {
+            blackCheckers.splice(i, 1);
+            pieces[midY][midX] = ".";
+            break;
+          }
+        }
+      } else if (activeChecker.color === "black") {
+        // remove red checker
+        for (let i = 0; i < redCheckers.length; i++) {
+          if (redCheckers[i].x === midX && redCheckers[i].y === midY) {
+            redCheckers.splice(i, 1);
+            pieces[midY][midX] = ".";
+            break;
+          }
+        }
+      }
+    }
+    // reset
     pieces[selectedPiece.y][selectedPiece.x] = ".";
     pieces[y][x] = selectedPiece.color[0]; // redraw checker in new spot
 
@@ -238,48 +329,5 @@ class Checkers {
     selectedPiece.y = y;
 
     checkerboard[prevPosY][prevPosX] = prevColor;
-    checkerboard[y][x] = SELECTED_TILE; // highlight the new position
   }
-}
-
-function minimax(board, depth, isMaximizingPlayer) {
-  if (depth === 0 || isGameOver(board)) {
-    return evaluateBoard(board);
-  }
-
-  if (isMaximizingPlayer) {
-    let maxEval = -Infinity;
-    let moves = getAllPossibleMoves(board, "black");
-    for (let move of moves) {
-      let newBoard = makeMove(board, move);
-      let eval = minimax(newBoard, depth - 1, false);
-      maxEval = Math.max(maxEval, eval);
-    }
-    return maxEval;
-  } else {
-    let minEval = Infinity;
-    let moves = getAllPossibleMoves(board, "red");
-    for (let move of moves) {
-      let newBoard = makeMove(board, move);
-      let eval = minimax(newBoard, depth - 1, true);
-      minEval = Math.min(minEval, eval);
-    }
-    return minEval;
-  }
-}
-
-function evaluateBoard(board) {
-
-}
-
-function isGameOver(board) {
-
-}
-
-function getAllPossibleMoves(board, player) {
-
-}
-
-function makeMove(board, move) {
-
 }
