@@ -285,7 +285,9 @@ class Checkers {
   }
 
   moveChecker(x, y) {
-    if (!activeChecker) return;
+    if (!activeChecker) {
+      return;
+    }
 
     //NOTE: jumping is currently buggy (11/14/2024)
 
@@ -307,7 +309,8 @@ class Checkers {
             break;
           }
         }
-      } else if (activeChecker.color === "black") {
+      } 
+      else if (activeChecker.color === "black") {
         // remove red checker
         for (let i = 0; i < redCheckers.length; i++) {
           if (redCheckers[i].x === midX && redCheckers[i].y === midY) {
