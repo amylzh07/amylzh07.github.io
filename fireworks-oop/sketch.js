@@ -9,15 +9,15 @@ class Particle {
     this.dx = random(-5, 5);
     this.dy = random(-5, 5);
     this.size = 5;
-    this.r = 224;
-    this.g = 17;
-    this.b = 95;
+    this.r = random(255);
+    this.g = random(255);
+    this.b = random(255);
     this.opacity = 255;
   }
 
   display() {
     noStroke();
-    fill(this.r, this.g, this.b, this.opacity);
+    fill(color(this.r, this.g, this.b, this.opacity));
     circle(this.x, this.y, this.size);
   }
   update() {
