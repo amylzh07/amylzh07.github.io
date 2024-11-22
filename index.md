@@ -17,6 +17,7 @@
 - [Walker-OOP-Array](walker-OOP-array)
 - [Fireworks OOP](fireworks-oop)
 - [Connected Nodes OOP](connected-nodes)
+- [Collide 2D Library](collide)
 
 ## Projects
 - [Interactive Scene](interactive-scene)
