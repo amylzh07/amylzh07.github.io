@@ -19,6 +19,7 @@
 - [Connected Nodes OOP](connected-nodes)
 - [Collide 2D Library](collide)
 - [Local Storage Demo](local-storage)
+- [Inheritance Demo](inheritance)
 
 ## Projects
 - [Interactive Scene](interactive-scene)
